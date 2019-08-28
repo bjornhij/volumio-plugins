@@ -573,6 +573,24 @@
 						}
 					],
 					"updated": "29-3-2019"
+				},
+				{
+					"prettyName": "disable_multiroom",
+					"icon": "fa-lightbulb-o",
+					"name": "disable_multiroom",
+					"version": "1.0.0",
+					"url": "http://volumio.github.io/volumio-plugins/plugins/volumio/armhf/system_controller/disable_multiroom/disable_multiroom.zip",
+					"license": "ISC",
+					"description": "Disables multiroom for this Volumio instance",
+					"details": "Disables multiroom on this Volumio instance",
+					"author": "Bjorn Hijmans",
+					"screenshots": [
+						{
+							"image": "",
+							"thumb": ""
+						}
+					],
+					"updated": "28-8-2019"
 				}
 			]
 		},
