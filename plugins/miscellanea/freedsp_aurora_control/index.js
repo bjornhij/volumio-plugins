@@ -34,6 +34,9 @@ freedspAuroraControl.prototype.onStart = function() {
     var self = this;
 	var defer=libQ.defer();
 
+	self.addVolumeScripts();
+	self.addToBrowseSources();
+
 
 	// Once the Plugin has successfull started resolve the promise
 	defer.resolve();
@@ -69,7 +72,7 @@ freedspAuroraControl.prototype.addVolumeScripts = function() {
     var mapTo100 = self.config.get('map_to_100', false);
 
     var data = {'enabled': enabled, 'setvolumescript': setVolumeScript, 'getvolumescript': getVolumeScript, 'setmutescript': setMuteScript,'getmutescript': getMuteScript, 'minVol': minVol, 'maxVol': maxVol, 'mapTo100': mapTo100};
-    self.logger.info('Adding FreeDSP Aurora attenuator parameters'+ JSON.stringify(data))
+    self.logger.info('Adding FreeDSP Aurora  parameters'+ JSON.stringify(data))
     self.commandRouter.updateVolumeScripts(data);
 };
 
@@ -125,10 +128,8 @@ freedspAuroraControl.prototype.setConf = function(varName, varValue) {
 
 
 freedspAuroraControl.prototype.addToBrowseSources = function () {
-
-	// Use this function to add your music service plugin to music sources
-    //var data = {name: 'Spotify', uri: 'spotify',plugin_type:'music_service',plugin_name:'spop'};
-    this.commandRouter.volumioAddToBrowseSources(data);
+	var data = {name: 'FreeDSPAurora', uri: 'aurora', plugin_type:'music_service', icon: 'fa fa-plug', plugin_name:'freedsp_aurora_control'};
+	this.commandRouter.volumioAddToBrowseSources(data);
 };
 
 freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
