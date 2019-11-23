@@ -29,7 +29,7 @@ freedspAuroraControl.prototype.onVolumioStart = function()
 
 	self.addVolumeScripts();
 	self.addToBrowseSources();
-
+	
     return libQ.resolve();
 }
 
