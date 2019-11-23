@@ -27,6 +27,9 @@ freedspAuroraControl.prototype.onVolumioStart = function()
 	this.config = new (require('v-conf'))();
 	this.config.loadFile(configFile);
 
+	self.addVolumeScripts();
+	self.addToBrowseSources();
+
     return libQ.resolve();
 }
 
@@ -68,7 +71,7 @@ freedspAuroraControl.prototype.addVolumeScripts = function() {
     var setMuteScript = '/data/plugins/miscellanea/freedsp_aurora_control/setmute.sh';
     var getMuteScript = '/data/plugins/miscellanea/freedsp_aurora_control/getmute.sh';
     var minVol = 0;
-    var maxVol = 63;
+    var maxVol = 100;
     var mapTo100 = self.config.get('map_to_100', false);
 
     var data = {'enabled': enabled, 'setvolumescript': setVolumeScript, 'getvolumescript': getVolumeScript, 'setmutescript': setMuteScript,'getmutescript': getMuteScript, 'minVol': minVol, 'maxVol': maxVol, 'mapTo100': mapTo100};
