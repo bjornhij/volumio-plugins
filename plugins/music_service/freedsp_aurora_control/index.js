@@ -5,7 +5,13 @@ var fs=require('fs-extra');
 var config = new (require('v-conf'))();
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
+var io = require('socket.io-client');
 
+var socket = io.connect('http://localhost:3000');
+
+
+//declare global status variable
+var status = 'na';
 
 module.exports = freedspAuroraControl;
 function freedspAuroraControl(context) {
@@ -37,6 +43,14 @@ freedspAuroraControl.prototype.onStart = function() {
 
 	self.servicename = 'freedsp_aurora_control';
 
+	// read and parse status once
+    socket.emit('getState','');
+    socket.once('pushState', self.parseStatus.bind(self));
+
+    // listen to every subsequent status report from Volumio
+    // status is pushed after every playback action, so we will be
+    // notified if the status changes
+    socket.on('pushState', self.parseStatus.bind(self));
 
     setTimeout(function() {
 		self.addVolumeScripts();
@@ -46,6 +60,28 @@ freedspAuroraControl.prototype.onStart = function() {
     self.addToBrowseSources();
 
     return defer.promise;
+};
+
+// a pushState event has happened. Check whether it differs from the last known status and
+// switch output port on or off respectively
+freedspAuroraControl.prototype.parseStatus = function(state) {
+    var self = this;
+		var delay = 12000;
+		self.logger.info('CurState: ' + state.status + ' PrevState: ' + status);
+
+		clearTimeout(self.OffTimerID);
+    if(state.status=='play' && state.status!=status){
+        status=state.status;
+				//self.config.get('latched')? self.pulse(self.config.get('on_pulse_width')) : self.on();
+    } else if((state.status=='info' || state.status=='stop') && (status!='pause' && status!='stop')){
+				self.logger.info('InitTimeout - Amp off in: ' + delay + ' ms');
+				self.OffTimerID = setTimeout(function() {
+					self.logger.info('Switch off');
+					status=state.status;
+					//self.config.get('latched')? self.pulse(self.config.get('off_pulse_width')) : self.off();
+				}, delay);
+    }
+
 };
 
 freedspAuroraControl.prototype.onStop = function() {
@@ -149,7 +185,7 @@ freedspAuroraControl.prototype.explodeUri = function (uri) {
     var defer = libQ.defer();
 
 	defer.resolve({
-        uri: "music_service/freedsp_aurora_control/silcence.wav",
+        uri: "/data/plugins/music_service/freedsp_aurora_control/silence.wav",
         service: 'mpd',
         name: uri,
         type: 'track',
