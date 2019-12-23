@@ -6,6 +6,8 @@ var config = new (require('v-conf'))();
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var io = require('socket.io-client');
+var request = require('request');
+
 
 var socket = io.connect('http://localhost:3000');
 
@@ -66,10 +68,38 @@ freedspAuroraControl.prototype.onStart = function() {
 // switch output port on or off respectively
 freedspAuroraControl.prototype.parseStatus = function(state) {
     var self = this;
-		var delay = 12000;
-		self.logger.info('CurState: ' + state.status + ' PrevState: ' + status);
+	var delay = 12000;
 
-		clearTimeout(self.OffTimerID);
+
+	self.logger.info('CurState: ' + state.status + ' PrevState: ' + status);
+		
+	
+	
+	self.logger.info('PLAYING: ' + state.uri);
+	
+	if(state.uri != undefined)
+	{
+		if(state.uri.indexOf('aurora') == -1 && state.uri.indexOf('usb') == -1 && state.uri != '')
+		{
+			self.logger.info('Switch to usb input');		
+					
+			request.put(
+			    'http://localhost:9090/input/usb',
+			    {  },
+			    function (error, response, body) {
+/*
+					console.log(error);
+					console.log(response);
+					console.log(body);
+*/
+		
+			    }
+			);
+		}
+	}
+
+	clearTimeout(self.OffTimerID);
+	
     if(state.status=='play' && state.status!=status){
         status=state.status;
 				//self.config.get('latched')? self.pulse(self.config.get('on_pulse_width')) : self.on();
@@ -181,9 +211,27 @@ freedspAuroraControl.prototype.addToBrowseSources = function () {
 
 freedspAuroraControl.prototype.explodeUri = function (uri) {
     var self = this;
-    self.logger.info('[' + Date.now() + '] ' + '[freedsp_aurora_control] explodeUri: ' + uri);
+    self.logger.info('[' + Date.now() + '] ' + '[freedsp_aurora_control1] explodeUri: ' + uri);
+
     var defer = libQ.defer();
 
+
+	var input = uri.replace('aurora/', '');
+	
+	request.put(
+	    'http://localhost:9090/input/' + input,
+	    {  },
+	    function (error, response, body) {
+/*
+			console.log(error);
+			console.log(response);
+			console.log(body);
+*/
+
+	    }
+	);
+	
+	
 	defer.resolve({
         uri: "/data/plugins/music_service/freedsp_aurora_control/silence.wav",
         service: 'mpd',
@@ -236,7 +284,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:optical_2'
+								uri: 'aurora/optical_2'
 							},
 							{
 								service: 'freedsp_aurora_control',
@@ -245,7 +293,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:optical_3'
+								uri: 'aurora/optical_3'
 							},
 							{
 								service: 'freedsp_aurora_control',
@@ -254,7 +302,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:optical_4'
+								uri: 'aurora/optical_4'
 							},
 {
 								service: 'freedsp_aurora_control',
@@ -263,7 +311,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:analog_1'
+								uri: 'aurora/analog_1'
 							},
 							{
 								service: 'freedsp_aurora_control',
@@ -272,7 +320,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:analog_2'
+								uri: 'aurora/analog_2'
 							},
 							{
 								service: 'freedsp_aurora_control',
@@ -281,7 +329,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:analog_3'
+								uri: 'aurora/analog_3'
 							},
 							{
 								service: 'freedsp_aurora_control',
@@ -290,7 +338,7 @@ freedspAuroraControl.prototype.handleBrowseUri = function (curUri) {
 								artist: '',
 								album: '',
 								icon: 'fa fa-plug',
-								uri: 'aurora:track:analog_4'
+								uri: 'aurora/analog_4'
 							}
 						]
 					}
