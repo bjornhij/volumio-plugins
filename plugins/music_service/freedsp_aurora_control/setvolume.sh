@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo setvolume: Setting SoftMaster to 100%
+echo setvolume: Setting SoftMaster to 80%
 
-/usr/bin/amixer -c 5 sset SoftMaster 100%
+/usr/bin/amixer -c 5 sset SoftMaster 80%
 
